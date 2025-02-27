@@ -40,7 +40,7 @@ describe('SessionService', () => {
     expect(service.sessionInformation).toBeUndefined();
   });
 
-  it('should emit correct values on $isLogged()', (done) => {
+  it('should emit correct values on $isLogged()', () => {
     const mockUser: SessionInformation = {
       token: 'test',
       id: 1,
@@ -51,11 +51,10 @@ describe('SessionService', () => {
       admin: true,
     };
 
-    service.$isLogged().subscribe((value) => {
-      expect(value).toBe(service.isLogged);
-      done();
-    });
-
     service.logIn(mockUser);
+
+    service.$isLogged().subscribe((value) => {
+      expect(value).toBe(true);
+    });
   });
 });
