@@ -1,7 +1,10 @@
 describe('Login spec', () => {
-  it('Login successfull', () => {
+  //  Successful Login
+  it('Login successful', () => {
+    // Visit the login page
     cy.visit('/login');
 
+    // Mock the API response for a successful login
     cy.intercept('POST', '/api/auth/login', {
       body: {
         id: 1,
@@ -12,6 +15,7 @@ describe('Login spec', () => {
       },
     });
 
+    // Mock the API response for fetching session data
     cy.intercept(
       {
         method: 'GET',
@@ -20,17 +24,22 @@ describe('Login spec', () => {
       []
     ).as('session');
 
+    // Fill in the login form
     cy.get('input[formControlName=email]').type('yoga@studio.com');
     cy.get('input[formControlName=password]').type(
       `${'test!1234'}{enter}{enter}`
     );
 
+    // Verify that the user is redirected to the sessions page
     cy.url().should('include', '/sessions');
   });
 
+  //  Error message displayed for incorrect login credentials
   it('displays an error for incorrect login or password', () => {
+    // Visit the login page
     cy.visit('/login');
 
+    // Mock the API response for incorrect login attempt
     cy.intercept('POST', '/api/auth/login', {
       statusCode: 401,
       body: {
@@ -41,9 +50,11 @@ describe('Login spec', () => {
       },
     });
 
+    // Fill in the login form with incorrect credentials
     cy.get('input[formControlName=email]').type('yoga@studio.com');
     cy.get('input[formControlName=password]').type(`${'test'}{enter}{enter}`);
 
+    // Verify that the error message is displayed
     cy.get('div.login')
       .find('mat-card')
       .find('form.login-form')
@@ -52,9 +63,12 @@ describe('Login spec', () => {
       .should('be.visible');
   });
 
+  // Error displayed when required fields are missing
   it('shows an error when a required field is missing', () => {
+    // Visit the login page
     cy.visit('/login');
 
+    // Mock the API response for an unsuccessful login due to missing fields
     cy.intercept('POST', '/api/auth/login', {
       statusCode: 401,
       body: {
@@ -65,8 +79,10 @@ describe('Login spec', () => {
       },
     });
 
+    // Attempt to submit the form without entering email or password
     cy.get('input[formControlName=email]').type('{enter}{enter}{enter}');
 
+    // Verify that form fields are marked as invalid
     cy.get('div.login')
       .find('mat-card')
       .find('form.login-form')
@@ -77,6 +93,7 @@ describe('Login spec', () => {
           .should('have.class', 'mat-form-field-invalid');
       });
 
+    // Verify that the error message is displayed
     cy.get('div.login')
       .find('mat-card')
       .find('form.login-form')
