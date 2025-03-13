@@ -12,7 +12,7 @@ class UserDetailsImplTest {
 
     @Test
     void shouldCreateUserDetailsWithBuilder() {
-        // Arrange & Act: Create a UserDetailsImpl instance using the builder
+        // Given - A UserDetailsImpl instance is created with specific properties
         UserDetailsImpl user = UserDetailsImpl.builder()
                 .id(1L)
                 .username("testuser")
@@ -22,7 +22,7 @@ class UserDetailsImplTest {
                 .password("securepassword")
                 .build();
 
-        // Assert: Verify the properties are set correctly
+        // Then - The properties should be set correctly
         assertThat(user.getId()).isEqualTo(1L);
         assertThat(user.getUsername()).isEqualTo("testuser");
         assertThat(user.getFirstName()).isEqualTo("John");
@@ -33,23 +33,23 @@ class UserDetailsImplTest {
 
     @Test
     void getAuthorities_ShouldReturnEmptyCollection() {
-        // Arrange: Create a user instance
+        // Given - A user instance with no authorities
         UserDetailsImpl user = UserDetailsImpl.builder().build();
 
-        // Act: Get authorities
+        // When - The getAuthorities method is called
         Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
 
-        // Assert: Verify it's an empty collection
+        // Then - The response should be an empty collection
         assertThat(authorities).isNotNull();
         assertThat(authorities).isEmpty();
     }
 
     @Test
     void shouldReturnTrueForAllAccountStatusMethods() {
-        // Arrange: Create a user instance
+        // Given - A user instance
         UserDetailsImpl user = UserDetailsImpl.builder().build();
 
-        // Assert: Verify all account status methods return true
+        // Then - All account status methods should return true
         assertThat(user.isAccountNonExpired()).isTrue();
         assertThat(user.isAccountNonLocked()).isTrue();
         assertThat(user.isCredentialsNonExpired()).isTrue();
@@ -58,39 +58,39 @@ class UserDetailsImplTest {
 
     @Test
     void equals_ShouldReturnTrue_ForSameId() {
-        // Arrange: Two users with the same ID
+        // Given - Two user instances with the same ID
         UserDetailsImpl user1 = UserDetailsImpl.builder().id(1L).build();
         UserDetailsImpl user2 = UserDetailsImpl.builder().id(1L).build();
 
-        // Assert: They should be equal
+        // Then - They should be considered equal
         assertThat(user1).isEqualTo(user2);
     }
 
     @Test
     void equals_ShouldReturnFalse_ForDifferentIds() {
-        // Arrange: Two users with different IDs
+        // Given - Two user instances with different IDs
         UserDetailsImpl user1 = UserDetailsImpl.builder().id(1L).build();
         UserDetailsImpl user2 = UserDetailsImpl.builder().id(2L).build();
 
-        // Assert: They should not be equal
+        // Then - They should not be considered equal
         assertThat(user1).isNotEqualTo(user2);
     }
 
     @Test
     void equals_ShouldReturnFalse_WhenComparingWithNull() {
-        // Arrange: Create a user instance
+        // Given - A user instance
         UserDetailsImpl user = UserDetailsImpl.builder().id(1L).build();
 
-        // Assert: The user should not be equal to null
+        // Then - The user should not be equal to null
         assertThat(user).isNotEqualTo(null);
     }
 
     @Test
     void equals_ShouldReturnFalse_WhenComparingWithDifferentClass() {
-        // Arrange: Create a user instance
+        // Given - A user instance
         UserDetailsImpl user = UserDetailsImpl.builder().id(1L).build();
 
-        // Assert: The user should not be equal to an object of a different class
+        // Then - The user should not be equal to an object of a different class
         assertThat(user).isNotEqualTo("randomString");
     }
 }

@@ -31,6 +31,7 @@ class TeacherServiceTest {
 
     @BeforeEach
     void setUp() {
+        // Given - A test teacher dataset is prepared
         teacher1 = new Teacher();
         teacher1.setId(1L);
         teacher1.setFirstName("John");
@@ -44,28 +45,28 @@ class TeacherServiceTest {
 
     @Test
     void findAll_ShouldReturnListOfTeachers() {
-        // Arrange
+        // Given - The repository returns a list of teachers
         List<Teacher> expectedTeachers = Arrays.asList(teacher1, teacher2);
         when(teacherRepository.findAll()).thenReturn(expectedTeachers);
 
-        // Act
+        // When - The service's findAll method is called
         List<Teacher> actualTeachers = teacherService.findAll();
 
-        // Assert
+        // Then - The response should contain the expected list of teachers
         assertEquals(2, actualTeachers.size());
         assertEquals(expectedTeachers, actualTeachers);
-        verify(teacherRepository, times(1)).findAll(); // Vérifie que findAll() a été appelé une fois
+        verify(teacherRepository, times(1)).findAll();
     }
 
     @Test
     void findById_WhenTeacherExists_ShouldReturnTeacher() {
-        // Arrange
+        // Given - The repository returns the expected teacher when requested
         when(teacherRepository.findById(1L)).thenReturn(Optional.of(teacher1));
 
-        // Act
+        // When - The service's findById method is called
         Teacher foundTeacher = teacherService.findById(1L);
 
-        // Assert
+        // Then - The response should contain the expected teacher details
         assertNotNull(foundTeacher);
         assertEquals(1L, foundTeacher.getId());
         assertEquals("John", foundTeacher.getFirstName());
@@ -74,13 +75,13 @@ class TeacherServiceTest {
 
     @Test
     void findById_WhenTeacherDoesNotExist_ShouldReturnNull() {
-        // Arrange
+        // Given - The repository returns empty for a non-existent teacher
         when(teacherRepository.findById(99L)).thenReturn(Optional.empty());
 
-        // Act
+        // When - The service's findById method is called
         Teacher foundTeacher = teacherService.findById(99L);
 
-        // Assert
+        // Then - The response should be null
         assertNull(foundTeacher);
         verify(teacherRepository, times(1)).findById(99L);
     }

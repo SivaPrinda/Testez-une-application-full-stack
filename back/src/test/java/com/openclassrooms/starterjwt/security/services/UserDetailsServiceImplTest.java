@@ -30,6 +30,7 @@ class UserDetailsServiceImplTest {
 
     @BeforeEach
     void setUp() {
+        // Given - A test user is prepared with sample data
         testUser = new User(
                 "test@example.com",
                 "Doe",
@@ -42,13 +43,13 @@ class UserDetailsServiceImplTest {
 
     @Test
     void loadUserByUsername_ShouldReturnUserDetails_WhenUserExists() {
-        // Arrange
+        // Given - The repository returns a user when queried with a valid email
         when(userRepository.findByEmail(testUser.getEmail())).thenReturn(Optional.of(testUser));
 
-        // Act
+        // When - The service's loadUserByUsername method is called with a valid email
         UserDetails userDetails = userDetailsService.loadUserByUsername(testUser.getEmail());
 
-        // Assert
+        // Then - The response should contain the expected user details
         assertThat(userDetails).isNotNull();
         assertThat(userDetails.getUsername()).isEqualTo(testUser.getEmail());
         assertThat(userDetails.getPassword()).isEqualTo(testUser.getPassword());
@@ -57,15 +58,17 @@ class UserDetailsServiceImplTest {
 
     @Test
     void loadUserByUsername_ShouldThrowException_WhenUserNotFound() {
-        // Arrange
+        // Given - The repository returns empty when queried with an unknown email
         when(userRepository.findByEmail("unknown@example.com")).thenReturn(Optional.empty());
 
+        // When - The service's loadUserByUsername method is called with an unknown email
         // Act & Assert
         assertThrows(UsernameNotFoundException.class,
                 () -> userDetailsService.loadUserByUsername("unknown@example.com"),
                 "User Not Found with email: unknown@example.com"
         );
 
+        // Then - A UsernameNotFoundException should be thrown
         verify(userRepository, times(1)).findByEmail("unknown@example.com");
     }
 }
