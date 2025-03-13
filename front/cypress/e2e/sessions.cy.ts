@@ -1,5 +1,7 @@
 describe('Session spec', () => {
+  // Before Each Test: Mock API Responses
   beforeEach(() => {
+
     // Given - User is on the login page and intercepts session-related APIs
     cy.intercept('POST', '/api/auth/login', {
       body: {
@@ -7,10 +9,11 @@ describe('Session spec', () => {
         username: 'userName',
         firstName: 'firstName',
         lastName: 'lastName',
-        admin: true,
+        admin: true, // Admin user
       },
     });
 
+    // Mock GET request for retrieving all sessions
     cy.intercept('GET', '/api/session', {
       body: [
         {
@@ -36,6 +39,7 @@ describe('Session spec', () => {
       ],
     });
 
+    // Mock GET request for retrieving a specific session by ID
     cy.intercept('GET', '/api/session/1', {
       body: {
         id: 1,
@@ -48,6 +52,8 @@ describe('Session spec', () => {
         updatedAt: '2025-01-31T18:52:19',
       },
     });
+
+    // Mock GET request for retrieving teachers
     cy.intercept('GET', '/api/teacher', {
       body: [
         {
@@ -68,6 +74,7 @@ describe('Session spec', () => {
     });
   });
 
+  // Test 1: User login and redirection to session page
   it('displays the list of sessions', () => {
     // Given - User is on the login page
     cy.visit('/login');
@@ -76,27 +83,34 @@ describe('Session spec', () => {
       `${'test!1234'}{enter}{enter}`
     );
 
+
     // Then - User should be redirected to the sessions page
     cy.url().should('include', '/sessions');
   });
 
+  // Test 2: Ensure admin can see "Create" and "Detail" buttons
   it('shows "Create" and "Detail" buttons for admin users', () => {
     // Then - "Create" and "Detail" buttons should be visible for admin users
     cy.contains('button', 'Create').should('be.visible');
     cy.contains('button', 'Detail').should('be.visible');
   });
 
+  // Test 3: Click "Detail" button to view session details
   it('displays session information correctly', () => {
+
     // When - User clicks on the Detail button
     cy.contains('Detail').click();
     // Then - Session information should be displayed
+
   });
 
+  // Test 4: Verify admin can see the "Delete" button
   it('displays "Delete" button for admin user', () => {
     // Then - "Delete" button should be visible for admin users
     cy.contains('button', 'Delete').should('be.visible');
   });
 
+  // Test 5: Ensure an error appears when required fields are missing during session creation
   it('shows an error when a required field is missing during session creation', () => {
     // Given - User is on the session creation page
     cy.contains('Session').click();
@@ -113,13 +127,17 @@ describe('Session spec', () => {
       },
     });
 
+    // Ensure submit button is disabled before filling fields
     cy.get('button[type=submit]').should('be.disabled');
 
+    // Fill session form
     cy.get('input[formControlName=name]').type('test');
     cy.get('input[formControlName=date]').type('2025-01-03');
     cy.get('textarea[formControlName="description"]').type(
-      `${'Description de la session'}{enter}{enter}`
+      'Description de la session'
     );
+
+    // Submit form
     cy.get('form').submit();
 
     // Then - The submit button should remain disabled
@@ -128,11 +146,12 @@ describe('Session spec', () => {
 
   it('session created successfuly', () => {
     // Given - User is on the session creation page
+
     cy.intercept('POST', '/api/session', {
       body: {
         id: 3,
         name: 'Session de test',
-        date: '2012-01-01T00:00:00.000+00:00',
+        date: '2025-01-01T00:00:00.000+00:00',
         teacher_id: 2,
         description: 'Description de la session',
         users: [],
@@ -140,6 +159,7 @@ describe('Session spec', () => {
         updatedAt: '2025-01-03T21:56:33.467',
       },
     });
+
     cy.contains('Session').click();
     cy.contains('Create').click();
 
@@ -157,9 +177,12 @@ describe('Session spec', () => {
     cy.url().should('include', '/sessions');
   });
 
+  // Test 7: Ensure an error appears when required fields are missing during session editing
   it('shows an error when a required field is missing during session editing', () => {
     // When - User clicks on Edit button
     cy.contains('Edit').click();
+
+    // Mock unsuccessful session edit request (Unauthorized)
     cy.intercept('POST', '/api/session', {
       statusCode: 401,
       body: {
@@ -169,6 +192,7 @@ describe('Session spec', () => {
         status: 401,
       },
     });
+
     // When - User clears the name field and loses focus
     cy.get('input[formControlName="name"]').clear().blur();
     cy.get('input[formControlName="name"]').should('have.class', 'ng-invalid');
@@ -177,6 +201,7 @@ describe('Session spec', () => {
     cy.get('button[type=submit]').should('be.disabled');
   });
 
+  // Test 8: Successfully edit a session
   it('edits a session successfully', () => {
     // Given - User is on the session editing page
     cy.intercept('PUT', '/api/session/1', {
@@ -191,6 +216,7 @@ describe('Session spec', () => {
         updatedAt: '2025-01-31T18:52:19',
       },
     });
+
     cy.get('input[formControlName="name"]')
       .clear()
       .should('have.value', '')
@@ -201,6 +227,7 @@ describe('Session spec', () => {
     cy.url().should('include', '/sessions');
   });
 
+  // Test 9: Successfully delete a session
   it('deletes a session successfully', () => {
     // When - User clicks on Detail button and then Delete button
     cy.contains('Detail').click();

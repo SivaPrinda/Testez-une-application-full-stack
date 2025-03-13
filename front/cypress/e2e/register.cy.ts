@@ -1,5 +1,7 @@
 describe('Register spec', () => {
+  //  Display an error when a required field is missing
   it('shows an error when a required field is missing during account creation', () => {
+
     // Given - User is on the register page
     cy.visit('/register');
 
@@ -12,6 +14,7 @@ describe('Register spec', () => {
       `${'john123'}{enter}{enter}`
     );
 
+    // Attempt to submit the form
     cy.get('form').submit();
 
     // Then - The submit button should remain disabled and an error message should be displayed
@@ -21,12 +24,16 @@ describe('Register spec', () => {
 
   it('Register successfull', () => {
     // Given - User is on the register page and intercepts the registration API
+
     cy.visit('/register');
+
+    // Mock the API response for successful registration
     cy.intercept('POST', '/api/auth/register', {
       body: {
         message: 'User registered successfully!',
       },
     });
+
 
     // When - User fills the registration form and submits
     cy.get('input[formControlName=firstName]').type('test');
@@ -35,6 +42,7 @@ describe('Register spec', () => {
     cy.get('input[formControlName=password]').type(
       `${'test!1234'}{enter}{enter}`
     );
+
 
     // Then - User should be redirected to the login page
     cy.url().should('include', '/login');
