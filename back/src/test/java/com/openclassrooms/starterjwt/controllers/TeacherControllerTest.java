@@ -36,6 +36,7 @@ class TeacherControllerTest {
 
     @BeforeEach
     void setUp() {
+        // Given - A test teacher and teacher DTO are prepared
         testTeacher = new Teacher();
         testTeacher.setId(1L);
         testTeacher.setFirstName("John");
@@ -49,11 +50,14 @@ class TeacherControllerTest {
 
     @Test
     void findById_ShouldReturnTeacher_WhenExists() {
+        // Given - The service will return the expected teacher when requested
         when(teacherService.findById(1L)).thenReturn(testTeacher);
         when(teacherMapper.toDto(testTeacher)).thenReturn(testTeacherDto);
 
+        // When - The controller's findById method is called
         ResponseEntity<?> response = teacherController.findById("1");
 
+        // Then - The response should be OK and contain the expected teacher DTO
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
         assertThat(response.getBody()).isEqualTo(testTeacherDto);
 
@@ -63,10 +67,13 @@ class TeacherControllerTest {
 
     @Test
     void findById_ShouldReturnNotFound_WhenDoesNotExist() {
+        // Given - The service will return null for a non-existent teacher
         when(teacherService.findById(999L)).thenReturn(null);
 
+        // When - The controller's findById method is called
         ResponseEntity<?> response = teacherController.findById("999");
 
+        // Then - The response should be 404 Not Found
         assertThat(response.getStatusCodeValue()).isEqualTo(404);
         verify(teacherService, times(1)).findById(999L);
         verifyNoInteractions(teacherMapper);
@@ -74,8 +81,10 @@ class TeacherControllerTest {
 
     @Test
     void findById_ShouldReturnBadRequest_WhenIdIsInvalid() {
+        // When - The controller's findById method is called with an invalid ID
         ResponseEntity<?> response = teacherController.findById("invalid");
 
+        // Then - The response should be 400 Bad Request
         assertThat(response.getStatusCodeValue()).isEqualTo(400);
         verifyNoInteractions(teacherService);
         verifyNoInteractions(teacherMapper);
@@ -86,11 +95,14 @@ class TeacherControllerTest {
         List<Teacher> teacherList = Arrays.asList(testTeacher);
         List<TeacherDto> teacherDtoList = Arrays.asList(testTeacherDto);
 
+        // Given - The service will return a list of teachers
         when(teacherService.findAll()).thenReturn(teacherList);
         when(teacherMapper.toDto(teacherList)).thenReturn(teacherDtoList);
 
+        // When - The controller's findAll method is called
         ResponseEntity<?> response = teacherController.findAll();
 
+        // Then - The response should be OK and contain the expected teacher list
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
         assertThat(response.getBody()).isEqualTo(teacherDtoList);
 

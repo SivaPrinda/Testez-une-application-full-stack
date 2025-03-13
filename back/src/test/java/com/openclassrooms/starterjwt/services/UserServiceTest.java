@@ -28,6 +28,7 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp() {
+        // Given - A test user is prepared
         user = new User();
         user.setId(1L);
         user.setFirstName("Alice");
@@ -36,13 +37,13 @@ class UserServiceTest {
 
     @Test
     void findById_WhenUserExists_ShouldReturnUser() {
-        // Arrange
+        // Given - The repository returns the expected user when requested
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
-        // Act
+        // When - The service's findById method is called
         User foundUser = userService.findById(1L);
 
-        // Assert
+        // Then - The response should contain the expected user details
         assertNotNull(foundUser);
         assertEquals(1L, foundUser.getId());
         assertEquals("Alice", foundUser.getFirstName());
@@ -51,27 +52,27 @@ class UserServiceTest {
 
     @Test
     void findById_WhenUserDoesNotExist_ShouldReturnNull() {
-        // Arrange
+        // Given - The repository returns empty for a non-existent user
         when(userRepository.findById(99L)).thenReturn(Optional.empty());
 
-        // Act
+        // When - The service's findById method is called
         User foundUser = userService.findById(99L);
 
-        // Assert
+        // Then - The response should be null
         assertNull(foundUser);
         verify(userRepository, times(1)).findById(99L);
     }
 
     @Test
     void delete_ShouldCallRepositoryDeleteById() {
-        // Arrange
+        // Given - The repository will successfully delete the user
         Long userId = 1L;
         doNothing().when(userRepository).deleteById(userId);
 
-        // Act
+        // When - The service's delete method is called
         userService.delete(userId);
 
-        // Assert
+        // Then - The repository's deleteById method should be called once
         verify(userRepository, times(1)).deleteById(userId);
     }
 }

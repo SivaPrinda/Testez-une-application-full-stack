@@ -34,11 +34,11 @@ class JwtUtilsTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        //  Use Reflection to Inject Private Fields
+        // Given - JWT utility setup with a mock secret key and expiration time
         setPrivateField(jwtUtils, "jwtSecret", jwtSecret);
         setPrivateField(jwtUtils, "jwtExpirationMs", jwtExpirationMs);
 
-        //  Generate a test JWT
+        // Generate a test JWT
         testToken = Jwts.builder()
                 .setSubject("testUser")
                 .setIssuedAt(new Date())
@@ -47,7 +47,7 @@ class JwtUtilsTest {
                 .compact();
     }
 
-    //  Helper method to modify private fields using Reflection
+    // Helper method to modify private fields using Reflection
     private void setPrivateField(Object target, String fieldName, Object value) throws Exception {
         Field field = JwtUtils.class.getDeclaredField(fieldName);
         field.setAccessible(true);
@@ -56,48 +56,48 @@ class JwtUtilsTest {
 
     @Test
     void generateJwtToken_ShouldReturnValidToken() {
-        //  Move stubbing inside this test to avoid unnecessary stubbing
+        // Given - Mocked authentication and user details
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userDetails.getUsername()).thenReturn("testUser");
 
-        // Act
+        // When - The generateJwtToken method is called
         String token = jwtUtils.generateJwtToken(authentication);
 
-        // Assert
+        // Then - The generated token should be valid and not empty
         assertThat(token).isNotNull();
         assertThat(token).isNotEmpty();
     }
 
     @Test
     void getUserNameFromJwtToken_ShouldReturnCorrectUsername() {
-        // Act
+        // When - The getUserNameFromJwtToken method is called
         String username = jwtUtils.getUserNameFromJwtToken(testToken);
 
-        // Assert
+        // Then - The returned username should match the expected username
         assertThat(username).isEqualTo("testUser");
     }
 
     @Test
     void validateJwtToken_ShouldReturnTrue_WhenTokenIsValid() {
-        // Act
+        // When - The validateJwtToken method is called with a valid token
         boolean isValid = jwtUtils.validateJwtToken(testToken);
 
-        // Assert
+        // Then - The result should be true
         assertThat(isValid).isTrue();
     }
 
     @Test
     void validateJwtToken_ShouldReturnFalse_WhenTokenIsMalformed() {
-        // Act
+        // When - The validateJwtToken method is called with a malformed token
         boolean isValid = jwtUtils.validateJwtToken("invalid.token.format");
 
-        // Assert
+        // Then - The result should be false
         assertThat(isValid).isFalse();
     }
 
     @Test
     void validateJwtToken_ShouldReturnFalse_WhenTokenIsExpired() {
-        // Arrange: Create an expired token
+        // Given - An expired JWT token
         String expiredToken = Jwts.builder()
                 .setSubject("testUser")
                 .setIssuedAt(new Date(System.currentTimeMillis() - 10000)) // Issued 10 sec ago
@@ -105,16 +105,16 @@ class JwtUtilsTest {
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
 
-        // Act
+        // When - The validateJwtToken method is called with the expired token
         boolean isValid = jwtUtils.validateJwtToken(expiredToken);
 
-        // Assert
+        // Then - The result should be false
         assertThat(isValid).isFalse();
     }
 
     @Test
     void validateJwtToken_ShouldReturnFalse_WhenTokenHasInvalidSignature() {
-        // Arrange: Create a token with a different secret key
+        // Given - A JWT token with an invalid signature
         String invalidSignatureToken = Jwts.builder()
                 .setSubject("testUser")
                 .setIssuedAt(new Date())
@@ -122,10 +122,10 @@ class JwtUtilsTest {
                 .signWith(SignatureAlgorithm.HS512, "wrongSecretKey") // Different secret
                 .compact();
 
-        // Act
+        // When - The validateJwtToken method is called
         boolean isValid = jwtUtils.validateJwtToken(invalidSignatureToken);
 
-        // Assert
+        // Then - The result should be false
         assertThat(isValid).isFalse();
     }
 }

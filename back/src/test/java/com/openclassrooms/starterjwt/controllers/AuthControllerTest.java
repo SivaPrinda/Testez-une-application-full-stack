@@ -50,6 +50,7 @@ class AuthControllerTest {
 
     @BeforeEach
     void setUp() {
+        // Given - A test user and user details are prepared
         testUser = new User("test@example.com", "Doe", "John", "hashedPassword", false);
         testUser.setId(1L);
 
@@ -58,11 +59,12 @@ class AuthControllerTest {
 
     @Test
     void authenticateUser_ValidCredentials_ShouldReturnJwtToken() {
-        // Arrange
+        // Given - A valid login request with correct credentials
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setEmail("test@example.com");
         loginRequest.setPassword("password");
 
+        // Mocking dependencies to simulate successful authentication
         Authentication authentication = mock(Authentication.class);
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenReturn(authentication);
@@ -70,10 +72,10 @@ class AuthControllerTest {
         when(jwtUtils.generateJwtToken(authentication)).thenReturn("mocked-jwt-token");
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(testUser));
 
-        // Act
+        // When - The user attempts to authenticate
         ResponseEntity<?> response = authController.authenticateUser(loginRequest);
 
-        // Assert
+        // Then - The response should be OK and contain a valid JWT token
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
         assertThat(response.getBody()).isInstanceOf(JwtResponse.class);
         JwtResponse jwtResponse = (JwtResponse) response.getBody();
@@ -87,15 +89,16 @@ class AuthControllerTest {
 
     @Test
     void authenticateUser_InvalidCredentials_ShouldReturnUnauthorized() {
-        // Arrange
+        // Given - A login request with invalid credentials
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setEmail("wrong@example.com");
         loginRequest.setPassword("wrongPassword");
 
+        // Mocking authentication failure
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenThrow(new RuntimeException("Invalid credentials"));
 
-        // Act & Assert
+        // Then - An exception should be thrown with the correct error message
         assertThatThrownBy(() -> authController.authenticateUser(loginRequest))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Invalid credentials");
@@ -107,20 +110,21 @@ class AuthControllerTest {
 
     @Test
     void registerUser_NewUser_ShouldReturnSuccessMessage() {
-        // Arrange
+        // Given - A valid signup request for a new user
         SignupRequest signupRequest = new SignupRequest();
         signupRequest.setEmail("newuser@example.com");
         signupRequest.setFirstName("Alice");
         signupRequest.setLastName("Smith");
         signupRequest.setPassword("securePassword");
 
+        // Mocking dependencies to allow successful registration
         when(userRepository.existsByEmail(signupRequest.getEmail())).thenReturn(false);
         when(passwordEncoder.encode(signupRequest.getPassword())).thenReturn("hashedPassword");
 
-        // Act
+        // When - The user attempts to register
         ResponseEntity<?> response = authController.registerUser(signupRequest);
 
-        // Assert
+        // Then - The response should be OK and confirm successful registration
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
         assertThat(response.getBody()).isInstanceOf(MessageResponse.class);
         MessageResponse messageResponse = (MessageResponse) response.getBody();
@@ -131,16 +135,17 @@ class AuthControllerTest {
 
     @Test
     void registerUser_EmailAlreadyTaken_ShouldReturnErrorMessage() {
-        // Arrange
+        // Given - A signup request with an email that is already taken
         SignupRequest signupRequest = new SignupRequest();
         signupRequest.setEmail("test@example.com");
 
+        // Mocking dependencies to simulate duplicate email
         when(userRepository.existsByEmail(signupRequest.getEmail())).thenReturn(true);
 
-        // Act
+        // When - The user attempts to register
         ResponseEntity<?> response = authController.registerUser(signupRequest);
 
-        // Assert
+        // Then - The response should return a 400 status and indicate the email is already taken
         assertThat(response.getStatusCodeValue()).isEqualTo(400);
         assertThat(response.getBody()).isInstanceOf(MessageResponse.class);
         MessageResponse messageResponse = (MessageResponse) response.getBody();

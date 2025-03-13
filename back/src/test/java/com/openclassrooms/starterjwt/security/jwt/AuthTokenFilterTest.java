@@ -45,16 +45,18 @@ class AuthTokenFilterTest {
 
     @BeforeEach
     void setUp() {
+        // Given - A mock request, response, and filter chain are prepared
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
         filterChain = new MockFilterChain();
+
         //  Reset SecurityContextHolder before each test
         SecurityContextHolder.clearContext();
     }
 
     @Test
     void doFilterInternal_ShouldAuthenticateUser_WhenJwtIsValid() throws ServletException, IOException {
-        // Arrange
+        // Given - A valid JWT token with corresponding user details
         String token = "valid-jwt-token";
         String username = "testuser";
         request.addHeader("Authorization", "Bearer " + token);
@@ -64,10 +66,10 @@ class AuthTokenFilterTest {
         when(userDetailsService.loadUserByUsername(username)).thenReturn(userDetails);
         when(userDetails.getAuthorities()).thenReturn(null); // No roles needed for this test
 
-        // Act
+        // When - The filter's doFilterInternal method is called
         authTokenFilter.doFilterInternal(request, response, filterChain);
 
-        // Assert
+        // Then - The user should be authenticated and stored in the SecurityContext
         UsernamePasswordAuthenticationToken authentication =
                 (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         assertThat(authentication).isNotNull();
@@ -79,16 +81,16 @@ class AuthTokenFilterTest {
 
     @Test
     void doFilterInternal_ShouldNotAuthenticateUser_WhenJwtIsInvalid() throws ServletException, IOException {
-        // Arrange
+        // Given - An invalid JWT token
         String token = "invalid-jwt-token";
         request.addHeader("Authorization", "Bearer " + token);
 
         when(jwtUtils.validateJwtToken(token)).thenReturn(false);
 
-        // Act
+        // When - The filter's doFilterInternal method is called
         authTokenFilter.doFilterInternal(request, response, filterChain);
 
-        // Assert
+        // Then - No authentication should be stored in the SecurityContext
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
         verify(jwtUtils, times(1)).validateJwtToken(token);
         verify(jwtUtils, never()).getUserNameFromJwtToken(anyString());
@@ -97,13 +99,13 @@ class AuthTokenFilterTest {
 
     @Test
     void doFilterInternal_ShouldNotAuthenticateUser_WhenNoJwtIsProvided() throws ServletException, IOException {
-        // Arrange
+        // When - The filter's doFilterInternal method is called without a token
         request.addHeader("Authorization", "");
 
         // Act
         authTokenFilter.doFilterInternal(request, response, filterChain);
 
-        // Assert
+        // Then - No authentication should be stored in the SecurityContext
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
         verifyNoInteractions(jwtUtils);
         verifyNoInteractions(userDetailsService);
@@ -111,46 +113,44 @@ class AuthTokenFilterTest {
 
     @Test
     void parseJwt_ShouldReturnToken_WhenValidAuthorizationHeaderIsProvided() throws Exception {
-        // Arrange
+        // Given - A valid Authorization header
         request.addHeader("Authorization", "Bearer valid-jwt-token");
 
-        // Use Reflection to access the private method
         Method parseJwtMethod = AuthTokenFilter.class.getDeclaredMethod("parseJwt", HttpServletRequest.class);
         parseJwtMethod.setAccessible(true); // Allow access to private method
 
-        // Act
+        // When - The private parseJwt method is invoked
         String token = (String) parseJwtMethod.invoke(authTokenFilter, request);
 
-        // Assert
+        // Then - The extracted token should match the expected value
         assertThat(token).isEqualTo("valid-jwt-token");
     }
 
     @Test
     void parseJwt_ShouldReturnNull_WhenAuthorizationHeaderIsMissing() throws Exception {
-        // Use Reflection to access the private method
+        // Given - No Authorization header in the request
         Method parseJwtMethod = AuthTokenFilter.class.getDeclaredMethod("parseJwt", HttpServletRequest.class);
         parseJwtMethod.setAccessible(true); // Allow access to private method
 
-        // Act
+        // When - The private parseJwt method is invoked
         String token = (String) parseJwtMethod.invoke(authTokenFilter, request);
 
-        // Assert
+        // Then - The returned token should be null
         assertThat(token).isNull();
     }
 
     @Test
     void parseJwt_ShouldReturnNull_WhenAuthorizationHeaderIsMalformed() throws Exception {
-        // Arrange
+        // Given - A malformed Authorization header
         request.addHeader("Authorization", "InvalidHeader");
 
-        // Use Reflection to access the private method
         Method parseJwtMethod = AuthTokenFilter.class.getDeclaredMethod("parseJwt", HttpServletRequest.class);
         parseJwtMethod.setAccessible(true); // Allow access to private method
 
-        // Act
+        // When - The private parseJwt method is invoked
         String token = (String) parseJwtMethod.invoke(authTokenFilter, request);
 
-        // Assert
+        // Then - The returned token should be null
         assertThat(token).isNull();
     }
 }

@@ -45,11 +45,11 @@ class AuthEntryPointJwtTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        // Mock request path and exception message
+        // Given - A request with a path and an unauthorized access exception
         when(request.getServletPath()).thenReturn("/api/test");
         when(authException.getMessage()).thenReturn("Unauthorized access");
 
-        // Properly mock response output stream
+        // Given - Mock the response output stream for JSON response testing
         byteArrayOutputStream = new ByteArrayOutputStream();
         servletOutputStream = new ServletOutputStream() {
             @Override
@@ -73,14 +73,13 @@ class AuthEntryPointJwtTest {
 
     @Test
     void commence_ShouldReturnUnauthorizedResponse() throws IOException, ServletException {
-        // Ensure no exception is thrown during normal execution
+        // When - The commence method is called
         authEntryPointJwt.commence(request, response, authException);
 
-        // Verify response properties
+        // Then - The response should have a 401 status and contain the correct error details
         verify(response).setContentType(MediaType.APPLICATION_JSON_VALUE);
         verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-        // Extract JSON response from mock output stream
         String jsonResponse = byteArrayOutputStream.toString();
         Map<String, Object> responseBody = objectMapper.readValue(jsonResponse, Map.class);
 
@@ -92,13 +91,13 @@ class AuthEntryPointJwtTest {
 
     @Test
     void commence_ShouldThrowIOException_WhenResponseFails() throws IOException {
-        // Arrange: Simulate failure in writing response
+        // Given - The response output stream throws an IOException
         when(response.getOutputStream()).thenThrow(new IOException("Response output error"));
 
-        // Expect IOException instead of ServletException
+        // When - The commence method is called
         assertThrows(IOException.class, () -> authEntryPointJwt.commence(request, response, authException));
 
-        // Verify that the response was still set to 401 Unauthorized
+        // Then - An IOException should be thrown and the response status should be 401
         verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
 
