@@ -17,6 +17,7 @@ describe('ListComponent', () => {
   let mockSessionService: Partial<SessionService>;
   let mockSessionApiService: Partial<SessionApiService>;
 
+  // Mock session data for testing
   const mockSessions: Session[] = [
     {
       id: 1,
@@ -36,6 +37,7 @@ describe('ListComponent', () => {
     },
   ];
 
+  // Setup the testing module with mock services, dependencies, and component creation
   beforeEach(async () => {
     mockSessionService = {
       sessionInformation: { admin: true } as SessionInformation,
@@ -59,10 +61,13 @@ describe('ListComponent', () => {
     fixture.detectChanges();
   });
 
+  // Test to ensure the component is created successfully
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
+  // Test to verify that session data is fetched and assigned to the sessions$ observable
+  // Verify the assigned data matches the mockSessions array
   it('should fetch sessions and assign them to sessions$', (done) => {
     component.sessions$.subscribe((sessions) => {
       expect(sessions).toEqual(mockSessions);
@@ -70,10 +75,12 @@ describe('ListComponent', () => {
     });
   });
 
+  // Test to ensure the correct session information is returned
   it('should return user session information', () => {
     expect(component.user).toEqual(mockSessionService.sessionInformation);
   });
 
+  // Test to ensure undefined is returned if no session information is available
   it('should return undefined if session information is not available', () => {
     mockSessionService.sessionInformation = undefined;
     expect(component.user).toBeUndefined();

@@ -2,7 +2,8 @@
 describe('Account spec', () => {
   // Before each test, perform login
   beforeEach(() => {
-    // Visit the login page
+    // Given - User is on the login page and intercepts API for authentication
+
     cy.visit('/login');
 
     // Mock API response for successful login
@@ -16,7 +17,9 @@ describe('Account spec', () => {
       },
     });
 
-    // Fill in login form and submit
+
+    // When - User submits the login form
+
     cy.get('input[formControlName=email]').type('yoga@studio.com');
     cy.get('input[formControlName=password]').type(
       `${'test!1234'}{enter}{enter}`
@@ -25,7 +28,9 @@ describe('Account spec', () => {
 
   // Verify that user account information is displayed correctly
   it('displays user information correctly', () => {
-    // Mock API response for fetching user details
+
+    // Given - Intercept API to retrieve user details
+
     cy.intercept('GET', '/api/user/1', {
       body: {
         id: 1,
@@ -38,29 +43,27 @@ describe('Account spec', () => {
       },
     }).as('user informations');
 
-    // Click on "Account" to access user details
+
+    // When - Navigating to the account section
     cy.contains('Account').click();
 
-    // Verify user full name is displayed correctly (last name should be uppercase)
+    // Then - User information should be displayed correctly
     cy.contains('p', 'Name: test TEST').should('be.visible');
-
-    // Verify user email is displayed correctly
     cy.contains('p', 'Email: yoga@studio.com').should('be.visible');
-
-    // Verify that "You are admin" text does not exist since user is not an admin
     cy.contains('p', 'You are admin').should('not.exist');
-
-    // Verify that the "Detail" button is visible
     cy.contains('button', 'Detail').should('be.visible');
 
-    // Verify account creation and last update timestamps
     cy.contains('p', 'Create at: January 1, 2025').should('be.visible');
     cy.contains('p', 'Last update: February 1, 2025').should('be.visible');
   });
 
   // Verify that user can log out successfully
   it('logs out successfully', () => {
-    // Click on the "Logout" button
+
+    // When - User clicks on logout
     cy.contains('Logout').click();
+
+    // Then - User redirected to home page
+    cy.url().should('include', '/');
   });
 });

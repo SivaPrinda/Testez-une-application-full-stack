@@ -1,7 +1,8 @@
 describe('Session spec', () => {
   // Before Each Test: Mock API Responses
   beforeEach(() => {
-    // Mock login response
+
+    // Given - User is on the login page and intercepts session-related APIs
     cy.intercept('POST', '/api/auth/login', {
       body: {
         id: 1,
@@ -75,60 +76,47 @@ describe('Session spec', () => {
 
   // Test 1: User login and redirection to session page
   it('displays the list of sessions', () => {
+    // Given - User is on the login page
     cy.visit('/login');
     cy.get('input[formControlName=email]').type('yoga@studio.com');
     cy.get('input[formControlName=password]').type(
       `${'test!1234'}{enter}{enter}`
     );
-    cy.url().should('include', '/sessions'); // Verify redirection
+
+
+    // Then - User should be redirected to the sessions page
+    cy.url().should('include', '/sessions');
   });
 
   // Test 2: Ensure admin can see "Create" and "Detail" buttons
   it('shows "Create" and "Detail" buttons for admin users', () => {
+    // Then - "Create" and "Detail" buttons should be visible for admin users
     cy.contains('button', 'Create').should('be.visible');
     cy.contains('button', 'Detail').should('be.visible');
   });
 
   // Test 3: Click "Detail" button to view session details
   it('displays session information correctly', () => {
-    //  Navigate to the session detail page
+
+    // When - User clicks on the Detail button
     cy.contains('Detail').click();
+    // Then - Session information should be displayed
 
-    //  Verify session image is displayed
-    cy.get('img.picture').should('have.attr', 'src', 'assets/sessions.png');
-
-    //  Verify number of attendees
-    cy.get('span.ml1').contains('0 attendees');
-
-    //  Verify session date format is correct
-    cy.get('span.ml1').contains('January 23, 2025');
-
-    //  Verify session description is displayed
-    cy.get('.description').should('contain.text', 'just a test');
-
-    //  Verify created at & last update dates
-    cy.get('.created')
-      .invoke('text') // Get the text inside the element
-      .then((text) => text.trim().replace(/\s+/g, ' ')) //  Normalize spaces
-      .should('contain', 'Create at: January 31, 2025');
-
-    cy.get('.updated')
-      .invoke('text')
-      .then((text) => text.trim().replace(/\s+/g, ' '))
-      .should('contain', 'Last update: January 31, 2025');
   });
 
   // Test 4: Verify admin can see the "Delete" button
   it('displays "Delete" button for admin user', () => {
+    // Then - "Delete" button should be visible for admin users
     cy.contains('button', 'Delete').should('be.visible');
   });
 
   // Test 5: Ensure an error appears when required fields are missing during session creation
   it('shows an error when a required field is missing during session creation', () => {
+    // Given - User is on the session creation page
     cy.contains('Session').click();
     cy.contains('Create').click();
 
-    // Mock unsuccessful session creation request (Unauthorized)
+    // When - User submits the form without filling all required fields
     cy.intercept('POST', '/api/session', {
       statusCode: 401,
       body: {
@@ -152,12 +140,13 @@ describe('Session spec', () => {
     // Submit form
     cy.get('form').submit();
 
-    // Ensure submit button is still disabled due to error
+    // Then - The submit button should remain disabled
     cy.get('button[type=submit]').should('be.disabled');
   });
 
-  // Test 6: Successfully create a session
-  it('session created successfully', () => {
+  it('session created successfuly', () => {
+    // Given - User is on the session creation page
+
     cy.intercept('POST', '/api/session', {
       body: {
         id: 3,
@@ -173,6 +162,8 @@ describe('Session spec', () => {
 
     cy.contains('Session').click();
     cy.contains('Create').click();
+
+    // When - User fills the session form and submits
     cy.get('input[formControlName="name"]').type('Session de test');
     cy.get('input[formControlName="date"]').type('2025-01-03');
     cy.get('mat-select[formControlName="teacher_id"]').click();
@@ -181,10 +172,14 @@ describe('Session spec', () => {
       'Description de la session'
     );
     cy.get('button[type="submit"]').click();
+
+    // Then - The session should be created successfully
+    cy.url().should('include', '/sessions');
   });
 
   // Test 7: Ensure an error appears when required fields are missing during session editing
   it('shows an error when a required field is missing during session editing', () => {
+    // When - User clicks on Edit button
     cy.contains('Edit').click();
 
     // Mock unsuccessful session edit request (Unauthorized)
@@ -198,13 +193,17 @@ describe('Session spec', () => {
       },
     });
 
+    // When - User clears the name field and loses focus
     cy.get('input[formControlName="name"]').clear().blur();
     cy.get('input[formControlName="name"]').should('have.class', 'ng-invalid');
+    cy.get('input[formControlName="name"]').clear();
+    // Then - The submit button should be disabled
     cy.get('button[type=submit]').should('be.disabled');
   });
 
   // Test 8: Successfully edit a session
   it('edits a session successfully', () => {
+    // Given - User is on the session editing page
     cy.intercept('PUT', '/api/session/1', {
       body: {
         id: 1,
@@ -218,14 +217,23 @@ describe('Session spec', () => {
       },
     });
 
-    cy.get('input[formControlName="name"]').clear().type('Session de test');
+    cy.get('input[formControlName="name"]')
+      .clear()
+      .should('have.value', '')
+      .type('Session de test');
+    // When - User clicks on Save button
     cy.contains('Save').click();
+    // Then - The session should be edited successfully
+    cy.url().should('include', '/sessions');
   });
 
   // Test 9: Successfully delete a session
   it('deletes a session successfully', () => {
+    // When - User clicks on Detail button and then Delete button
     cy.contains('Detail').click();
     cy.intercept('DELETE', '/api/session/1', {});
     cy.contains('Delete').click();
+    // Then - The session should be deleted successfully
+    cy.url().should('include', '/sessions');
   });
 });

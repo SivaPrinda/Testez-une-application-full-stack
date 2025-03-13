@@ -1,7 +1,7 @@
 describe('Login spec', () => {
-  //  Successful Login
-  it('Login successful', () => {
-    // Visit the login page
+
+  it('Login successfull', () => {
+    // Given - User is on the login page and intercepts the login API
     cy.visit('/login');
 
     // Mock the API response for a successful login
@@ -24,19 +24,23 @@ describe('Login spec', () => {
       []
     ).as('session');
 
-    // Fill in the login form
+
+    // When - User submits the login form
     cy.get('input[formControlName=email]').type('yoga@studio.com');
     cy.get('input[formControlName=password]').type(
       `${'test!1234'}{enter}{enter}`
     );
 
-    // Verify that the user is redirected to the sessions page
+
+    // Then - User should be redirected to the sessions page
     cy.url().should('include', '/sessions');
   });
 
   //  Error message displayed for incorrect login credentials
   it('displays an error for incorrect login or password', () => {
-    // Visit the login page
+
+    // Given - User is on the login page and intercepts the login API
+
     cy.visit('/login');
 
     // Mock the API response for incorrect login attempt
@@ -50,11 +54,13 @@ describe('Login spec', () => {
       },
     });
 
-    // Fill in the login form with incorrect credentials
+
+    // When - User submits the login form with incorrect credentials
     cy.get('input[formControlName=email]').type('yoga@studio.com');
     cy.get('input[formControlName=password]').type(`${'test'}{enter}{enter}`);
 
-    // Verify that the error message is displayed
+    // Then - An error message should be displayed
+
     cy.get('div.login')
       .find('mat-card')
       .find('form.login-form')
@@ -65,7 +71,8 @@ describe('Login spec', () => {
 
   // Error displayed when required fields are missing
   it('shows an error when a required field is missing', () => {
-    // Visit the login page
+
+    // Given - User is on the login page
     cy.visit('/login');
 
     // Mock the API response for an unsuccessful login due to missing fields
@@ -79,10 +86,11 @@ describe('Login spec', () => {
       },
     });
 
-    // Attempt to submit the form without entering email or password
+
+    // When - User submits the login form without filling the email
     cy.get('input[formControlName=email]').type('{enter}{enter}{enter}');
 
-    // Verify that form fields are marked as invalid
+    // Then - Required fields should be marked as invalid and an error message should be displayed
     cy.get('div.login')
       .find('mat-card')
       .find('form.login-form')

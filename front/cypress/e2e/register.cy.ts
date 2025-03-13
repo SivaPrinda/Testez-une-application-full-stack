@@ -1,13 +1,13 @@
 describe('Register spec', () => {
   //  Display an error when a required field is missing
   it('shows an error when a required field is missing during account creation', () => {
-    // Visit the registration page
+
+    // Given - User is on the register page
     cy.visit('/register');
 
-    // Ensure the "Submit" button is initially disabled
+    // When - User attempts to submit the form without filling all required fields
     cy.get('button[type=submit]').should('be.disabled');
 
-    // Fill in some fields but leave the email field empty
     cy.get('input[formControlName=firstName]').type('John');
     cy.get('input[formControlName=lastName]').type('Doe');
     cy.get('input[formControlName=password]').type(
@@ -17,16 +17,14 @@ describe('Register spec', () => {
     // Attempt to submit the form
     cy.get('form').submit();
 
-    // Verify that the "Submit" button remains disabled due to missing fields
+    // Then - The submit button should remain disabled and an error message should be displayed
     cy.get('button[type=submit]').should('be.disabled');
-
-    // Check that an error message appears
     cy.get('.error').should('contain', 'An error occurred');
   });
 
-  //  Successful user registration
-  it('Register successful', () => {
-    // Visit the registration page
+  it('Register successfull', () => {
+    // Given - User is on the register page and intercepts the registration API
+
     cy.visit('/register');
 
     // Mock the API response for successful registration
@@ -36,7 +34,8 @@ describe('Register spec', () => {
       },
     });
 
-    // Fill in all required fields
+
+    // When - User fills the registration form and submits
     cy.get('input[formControlName=firstName]').type('test');
     cy.get('input[formControlName=lastName]').type('test');
     cy.get('input[formControlName=email]').type('yoga@studio.com');
@@ -44,7 +43,8 @@ describe('Register spec', () => {
       `${'test!1234'}{enter}{enter}`
     );
 
-    // Verify that the user is redirected to the login page upon successful registration
+
+    // Then - User should be redirected to the login page
     cy.url().should('include', '/login');
   });
 });

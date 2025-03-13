@@ -26,7 +26,7 @@ describe('LoginComponent', () => {
     firstName: '',
     lastName: '',
     admin: true
-  }
+  } // Mock data representing a successful session information response
 
   const authServiceMock: Partial<AuthService> = {
     login: jest.fn()
@@ -68,59 +68,66 @@ describe('LoginComponent', () => {
   });
 
   it('should create', () => {
+    // Test to verify that the component is created successfully
     expect(component).toBeTruthy();
   });
 
   it('should login successfully', () => {
     // Given
+    // Mock a successful login response
     jest.spyOn(authServiceMock, 'login').mockReturnValue(of(sessionInformationMock));
     const credentials = {
       email: 'yoga@studio.com',
       password: 'test!1234'
     };
 
+    // Set form values with valid credentials
     component.form.setValue(credentials);
 
     // When
+    // Submit the form and assert successful interactions
     component.submit();
 
     // Then
-    // Login must have been called once with the credentials
+    // Ensure the login method is called with correct data
     expect(authServiceMock.login).toHaveBeenCalledTimes(1);
     expect(authServiceMock.login).toHaveBeenCalledWith(credentials);
 
-    // SessionService must have been called once with the sessionInformation
+    // Ensure the session service is called to store session information
     expect(sessionServiceMock.logIn).toHaveBeenCalledTimes(1);
     expect(sessionServiceMock.logIn).toHaveBeenCalledWith(sessionInformationMock);
 
-    // Router must have been called once with the route to navigate to
+    // Ensure the router navigates to the correct route
     expect(routerMock.navigate).toHaveBeenCalledTimes(1);
     expect(routerMock.navigate).toHaveBeenCalledWith(['/sessions']);
   });
 
   it('should not login when using bad credentials', () => {
     // Given
+    // Mock a failed login attempt with incorrect credentials
     jest.spyOn(authServiceMock, 'login').mockReturnValue(throwError(() => new Error('Bad credentials')));
     const credentials = {
       email: 'yoga@studio.com',
       password: 'bad password'
     };
 
+    // Set form values with invalid credentials
     component.form.setValue(credentials);
 
     // When
+    // Submit the form and assert error state
     component.submit();
 
     // Then
-    // Login must have been called once with the credentials
+    // Ensure the login method is called
     expect(authServiceMock.login).toHaveBeenCalledTimes(1);
     expect(authServiceMock.login).toHaveBeenCalledWith(credentials);
 
-    // SessionService and Router must not have been called
+    // Ensure no calls are made to the session service or router
     expect(sessionServiceMock.logIn).not.toHaveBeenCalled();
     expect(routerMock.navigate).not.toHaveBeenCalled();
 
-    // The component must be in error state
+    // Ensure the component sets the error state correctly
     expect(component.onError).toBe(true);
   });
 
