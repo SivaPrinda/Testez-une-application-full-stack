@@ -1,5 +1,6 @@
 describe('Login spec', () => {
   it('Login successfull', () => {
+    // Given - User is on the login page and intercepts the login API
     cy.visit('/login');
 
     cy.intercept('POST', '/api/auth/login', {
@@ -20,15 +21,18 @@ describe('Login spec', () => {
       []
     ).as('session');
 
+    // When - User submits the login form
     cy.get('input[formControlName=email]').type('yoga@studio.com');
     cy.get('input[formControlName=password]').type(
       `${'test!1234'}{enter}{enter}`
     );
 
+    // Then - User should be redirected to the sessions page
     cy.url().should('include', '/sessions');
   });
 
   it('displays an error for incorrect login or password', () => {
+    // Given - User is on the login page and intercepts the login API
     cy.visit('/login');
 
     cy.intercept('POST', '/api/auth/login', {
@@ -41,9 +45,11 @@ describe('Login spec', () => {
       },
     });
 
+    // When - User submits the login form with incorrect credentials
     cy.get('input[formControlName=email]').type('yoga@studio.com');
     cy.get('input[formControlName=password]').type(`${'test'}{enter}{enter}`);
 
+    // Then - An error message should be displayed
     cy.get('div.login')
       .find('mat-card')
       .find('form.login-form')
@@ -53,6 +59,7 @@ describe('Login spec', () => {
   });
 
   it('shows an error when a required field is missing', () => {
+    // Given - User is on the login page
     cy.visit('/login');
 
     cy.intercept('POST', '/api/auth/login', {
@@ -65,8 +72,10 @@ describe('Login spec', () => {
       },
     });
 
+    // When - User submits the login form without filling the email
     cy.get('input[formControlName=email]').type('{enter}{enter}{enter}');
 
+    // Then - Required fields should be marked as invalid and an error message should be displayed
     cy.get('div.login')
       .find('mat-card')
       .find('form.login-form')

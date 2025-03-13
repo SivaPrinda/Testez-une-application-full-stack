@@ -37,6 +37,7 @@ describe('FormComponent', () => {
   };
 
   beforeEach(async () => {
+    // Setup the testing module with mock services, dependencies, and component creation
     sessionApiService = {
       detail: jest.fn().mockReturnValue(
         of({
@@ -98,16 +99,19 @@ describe('FormComponent', () => {
   });
 
   it('should create', () => {
+    // Test to ensure the component is created successfully
     expect(component).toBeTruthy();
   });
 
   it('should redirect if user is not admin', () => {
+    // Test to verify that non-admin users are redirected to the sessions page
     mockSessionService.sessionInformation.admin = false;
     component.ngOnInit();
     expect(router.navigate).toHaveBeenCalledWith(['/sessions']);
   });
 
   it('should initialize form when creating a session', () => {
+    // Test to ensure form initialization when creating a session
     Object.defineProperty(router, 'url', { get: () => '/sessions/create' });
     component.ngOnInit();
     expect(component.sessionForm).toBeDefined();
@@ -115,6 +119,7 @@ describe('FormComponent', () => {
   });
 
   it('should initialize form when updating a session', () => {
+    // Test to ensure form initialization when updating a session with existing data
     Object.defineProperty(router, 'url', { get: () => '/sessions/update/123' });
     jest.spyOn<any, any>(component, 'initForm');
     sessionApiService.detail.mockReturnValue(
@@ -133,6 +138,7 @@ describe('FormComponent', () => {
   });
 
   it('should call create on submit if creating', () => {
+    // Mock form data for session creation
     component.onUpdate = false;
     component.sessionForm = new FormBuilder().group({
       name: 'Test',
@@ -140,6 +146,7 @@ describe('FormComponent', () => {
       teacher_id: '1',
       description: 'Desc',
     });
+    // Test to ensure the create method is called
     sessionApiService.create.mockReturnValue(
       of({
         name: 'New Session',
@@ -150,16 +157,19 @@ describe('FormComponent', () => {
       } as Session)
     );
     component.submit();
+    // Verify that a success message appears
     expect(sessionApiService.create).toHaveBeenCalled();
     expect(matSnackBar.open).toHaveBeenCalledWith(
       'Session created !',
       'Close',
       { duration: 3000 }
     );
+    // Verify navigation to the sessions list
     expect(router.navigate).toHaveBeenCalledWith(['sessions']);
   });
 
   it('should call update on submit if updating', () => {
+    // Mock form data for session update
     component.onUpdate = true;
     component['id'] = '123';
     component.sessionForm = new FormBuilder().group({
@@ -168,6 +178,7 @@ describe('FormComponent', () => {
       teacher_id: '1',
       description: 'Desc',
     });
+    // Test to ensure the update method is called with the correct ID
     sessionApiService.update.mockReturnValue(
       of({
         name: 'Updated Session',
@@ -182,20 +193,24 @@ describe('FormComponent', () => {
       '123',
       component.sessionForm.value
     );
+    // Verify that a success message appears
     expect(matSnackBar.open).toHaveBeenCalledWith(
       'Session updated !',
       'Close',
       { duration: 3000 }
     );
+    // Verify navigation to the sessions list
     expect(router.navigate).toHaveBeenCalledWith(['sessions']);
   });
 
   it('should display a snackbar and navigate when exitPage is called', () => {
+    // Test to verify snackbar message display
     jest.spyOn(router, 'navigate');
     component['exitPage']('Test Message');
     expect(matSnackBar.open).toHaveBeenCalledWith('Test Message', 'Close', {
       duration: 3000,
     });
+    // Test to ensure navigation to the sessions list occurs
     expect(router.navigate).toHaveBeenCalledWith(['sessions']);
   });
 });

@@ -20,6 +20,7 @@ describe('RegisterComponent', () => {
   let router: jest.Mocked<Router>;
 
   beforeEach(async () => {
+    // Setup the testing module with mock services and dependencies
     authService = {
       register: jest.fn(),
     } as unknown as jest.Mocked<AuthService>;
@@ -52,10 +53,12 @@ describe('RegisterComponent', () => {
   });
 
   it('should create', () => {
+    // Test to verify that the component is created successfully
     expect(component).toBeTruthy();
   });
 
   it('should have a valid form when all fields are filled correctly', () => {
+    // Test to ensure the form is valid when all required fields are filled
     component.form.setValue({
       email: 'test@example.com',
       firstName: 'John',
@@ -66,6 +69,7 @@ describe('RegisterComponent', () => {
   });
 
   it('should have an invalid form when required fields are empty', () => {
+    // Test to verify the form is invalid when required fields are empty
     component.form.setValue({
       email: '',
       firstName: '',
@@ -76,34 +80,43 @@ describe('RegisterComponent', () => {
   });
 
   it('should call authService.register and navigate on successful registration', () => {
+    // Mock a successful registration response
     authService.register.mockReturnValue(of(void 0));
+    // Fill the form with valid data
     component.form.setValue({
       email: 'test@example.com',
       firstName: 'John',
       lastName: 'Doe',
       password: 'securePassword123',
     });
+    // Submit the form
     component.submit();
+    // Verify that the authService.register method is called with correct data
     expect(authService.register).toHaveBeenCalledWith({
       email: 'test@example.com',
       firstName: 'John',
       lastName: 'Doe',
       password: 'securePassword123',
     });
+    // Verify that the router navigates to the login page
     expect(router.navigate).toHaveBeenCalledWith(['/login']);
   });
 
   it('should set onError to true if registration fails', () => {
+    // Mock a failed registration response
     authService.register.mockReturnValue(
       throwError(() => new Error('Registration failed'))
     );
+    // Fill the form with valid data
     component.form.setValue({
       email: 'test@example.com',
       firstName: 'John',
       lastName: 'Doe',
       password: 'securePassword123',
     });
+    // Submit the form
     component.submit();
+    // Verify that the component's onError flag is set to true
     expect(component.onError).toBeTruthy();
   });
 });

@@ -28,6 +28,7 @@ describe('MeComponent', () => {
     logOut: jest.fn(),
   };
 
+  // Setup mock services and configure the testing module
   beforeEach(async () => {
     userServiceMock = {
       getById: jest.fn().mockReturnValue(of({ id: 1, name: 'John Doe' })),
@@ -65,24 +66,27 @@ describe('MeComponent', () => {
     fixture.detectChanges();
   });
 
+  // Test to verify that the component is created successfully
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
+  // Test to ensure user data is fetched and assigned correctly on component initialization
   it('should fetch user data on init', () => {
     expect(userServiceMock.getById).toHaveBeenCalledWith('1');
     expect(component.user).toEqual({ id: 1, name: 'John Doe' });
   });
 
+  // Test to confirm that the browser navigates back when back() is called
   it('should navigate back when back() is called', () => {
     jest.spyOn(window.history, 'back');
     component.back();
     expect(window.history.back).toHaveBeenCalled();
   });
 
+  // Test to ensure the user is deleted, a success message is shown, and the user is redirected home
   it('should delete the user and navigate to home', () => {
     component.delete();
-
     expect(userServiceMock.delete).toHaveBeenCalledWith('1');
     expect(snackBarMock.open).toHaveBeenCalledWith(
       'Your account has been deleted !',

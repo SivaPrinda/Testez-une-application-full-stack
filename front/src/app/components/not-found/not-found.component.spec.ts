@@ -8,6 +8,7 @@ describe('NotFoundComponent', () => {
   let fixture: ComponentFixture<NotFoundComponent>;
 
   beforeEach(async () => {
+    // Setup the testing module and create the component instance
     await TestBed.configureTestingModule({
       declarations: [NotFoundComponent]
     }).compileComponents();
@@ -18,13 +19,14 @@ describe('NotFoundComponent', () => {
   });
 
   it('should create', () => {
+    // Test to verify that the component is created successfully
     expect(component).toBeTruthy();
   });
 
   it('should display "Page not found !"', () => {
+    // Test to verify that the "Page not found !" message is correctly displayed in the template
     const compiled = fixture.debugElement.nativeElement;
     expect(compiled.querySelector('h1').textContent).toContain('Page not found !');
   });
 
 });
-

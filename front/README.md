@@ -6,11 +6,11 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 Git clone:
 
-> git clone https://github.com/OpenClassrooms-Student-Center/P5-Full-Stack-testing
+> git clone https://github.com/SivaPrinda/Testez-une-application-full-stack.git
 
 Go inside folder:
 
-> cd yoga
+> cd front
 
 Install dependencies:
 
@@ -45,15 +45,25 @@ By default the admin account is:
 - password: test!1234
 
 
-### Test
+## Test
 
-#### E2E
-
+### E2E
+ 
 Launching e2e test:
-
+ 
 > npm run e2e
+ 
+To execute all tests from a single file:
+ 
+> npx cypress run --spec "cypress/e2e/all.cy.ts"
+ 
+Alternatively, in GUI mode:
+ 
+> npx cypress open
+```
+Then select `all.cy.ts` from the Cypress interface.
 
-Generate coverage report (you should launch e2e test before):
+Generate coverage report (you should launch E2E tests from the `all.cy.ts` file before):
 
 > npm run e2e:coverage
 
@@ -61,7 +71,7 @@ Report is available here:
 
 > front/coverage/lcov-report/index.html
 
-#### Unitary test
+### Unitary test
 
 Launching test:
 

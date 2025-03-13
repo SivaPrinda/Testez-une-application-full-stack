@@ -9,11 +9,11 @@ import { of } from 'rxjs';
 import { AppComponent } from './app.component';
 import { SessionService } from './services/session.service';
 
-
 describe('AppComponent', () => {
   let sessionServiceMock: Partial<SessionService>;
   let routerMock: Partial<Router>;
 
+  // Mock services for SessionService and Router with relevant methods
   beforeEach(async () => {
     sessionServiceMock = {
       $isLogged: jest.fn(() => of(true)),
@@ -24,6 +24,7 @@ describe('AppComponent', () => {
       navigate: jest.fn()
     };
 
+    // Setup the testing module with necessary imports, declarations, and mock providers
     await TestBed.configureTestingModule({
       imports: [
         RouterTestingModule,
@@ -39,11 +40,15 @@ describe('AppComponent', () => {
     }).compileComponents();
   });
 
+  // Test to ensure the AppComponent is created successfully
   it('should create the app', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
     expect(app).toBeTruthy();
   });
+
+  // Test to verify the $isLogged observable returns the correct value
+  // Subscribe to the observable and assert the expected result
   it('should return observable from $isLogged', (done) => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
@@ -53,6 +58,8 @@ describe('AppComponent', () => {
     });
   });
 
+  // Test to ensure the logout method triggers the logOut function in SessionService
+  // Ensure the Router navigates to the correct path after logout
   it('should call logOut and navigate on logout', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
