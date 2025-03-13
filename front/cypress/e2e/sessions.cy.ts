@@ -74,7 +74,7 @@ describe('Session spec', () => {
     });
   });
 
-  // Test 1: User login and redirection to session page
+  // User login and redirection to session page
   it('displays the list of sessions', () => {
     // Given - User is on the login page
     cy.visit('/login');
@@ -88,14 +88,14 @@ describe('Session spec', () => {
     cy.url().should('include', '/sessions');
   });
 
-  // Test 2: Ensure admin can see "Create" and "Detail" buttons
+  // Ensure admin can see "Create" and "Detail" buttons
   it('shows "Create" and "Detail" buttons for admin users', () => {
     // Then - "Create" and "Detail" buttons should be visible for admin users
     cy.contains('button', 'Create').should('be.visible');
     cy.contains('button', 'Detail').should('be.visible');
   });
 
-  // Test 3: Click "Detail" button to view session details
+  // Click "Detail" button to view session details
   it('displays session information correctly', () => {
 
     // When - User clicks on the Detail button
@@ -104,13 +104,13 @@ describe('Session spec', () => {
 
   });
 
-  // Test 4: Verify admin can see the "Delete" button
+  // Verify admin can see the "Delete" button
   it('displays "Delete" button for admin user', () => {
     // Then - "Delete" button should be visible for admin users
     cy.contains('button', 'Delete').should('be.visible');
   });
 
-  // Test 5: Ensure an error appears when required fields are missing during session creation
+  // Ensure an error appears when required fields are missing during session creation
   it('shows an error when a required field is missing during session creation', () => {
     // Given - User is on the session creation page
     cy.contains('Session').click();
@@ -177,7 +177,7 @@ describe('Session spec', () => {
     cy.url().should('include', '/sessions');
   });
 
-  // Test 7: Ensure an error appears when required fields are missing during session editing
+  // Ensure an error appears when required fields are missing during session editing
   it('shows an error when a required field is missing during session editing', () => {
     // When - User clicks on Edit button
     cy.contains('Edit').click();
@@ -201,7 +201,7 @@ describe('Session spec', () => {
     cy.get('button[type=submit]').should('be.disabled');
   });
 
-  // Test 8: Successfully edit a session
+  // Successfully edit a session
   it('edits a session successfully', () => {
     // Given - User is on the session editing page
     cy.intercept('PUT', '/api/session/1', {
@@ -227,7 +227,7 @@ describe('Session spec', () => {
     cy.url().should('include', '/sessions');
   });
 
-  // Test 9: Successfully delete a session
+  // Successfully delete a session
   it('deletes a session successfully', () => {
     // When - User clicks on Detail button and then Delete button
     cy.contains('Detail').click();
