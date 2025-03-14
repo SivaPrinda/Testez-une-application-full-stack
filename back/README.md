@@ -9,7 +9,7 @@ Ensure the following are installed on your system:
 
 ## Prerequisites
 
-1. **Java 11**  
+1. **Java 1.8**  
    Check your Java version:
 ```
    java -version
