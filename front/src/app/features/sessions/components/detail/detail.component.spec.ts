@@ -10,6 +10,8 @@ import { DetailComponent } from './detail.component';
 import { SessionApiService } from '../../services/session-api.service';
 import { TeacherService } from 'src/app/services/teacher.service';
 import { of } from 'rxjs';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 
 describe('DetailComponent', () => {
   let component: DetailComponent;
@@ -59,6 +61,8 @@ describe('DetailComponent', () => {
         HttpClientModule,
         MatSnackBarModule,
         ReactiveFormsModule,
+        MatCardModule,
+        MatIconModule
       ],
       declarations: [DetailComponent],
       providers: [
@@ -71,7 +75,12 @@ describe('DetailComponent', () => {
           useValue: {
             snapshot: { paramMap: { get: jest.fn().mockReturnValue('1') } },
           },
-        },
+        },{
+          provide: Router,
+          useValue: {
+            navigate: jest.fn()
+          }
+        }
       ],
     }).compileComponents();
 

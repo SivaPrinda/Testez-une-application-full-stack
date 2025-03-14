@@ -10,6 +10,7 @@ import { SessionApiService } from '../../services/session-api.service';
 import { Session } from '../../interfaces/session.interface';
 import { SessionInformation } from 'src/app/interfaces/sessionInformation.interface';
 import { of } from 'rxjs';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('ListComponent', () => {
   let component: ListComponent;
@@ -49,7 +50,7 @@ describe('ListComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [ListComponent],
-      imports: [HttpClientModule, MatCardModule, MatIconModule],
+      imports: [HttpClientModule, MatCardModule, MatIconModule,RouterTestingModule],
       providers: [
         { provide: SessionService, useValue: mockSessionService },
         { provide: SessionApiService, useValue: mockSessionApiService },
