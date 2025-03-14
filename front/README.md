@@ -18,7 +18,7 @@ Install dependencies:
 
 Launch Front-end:
 
-> npm run start;
+> ng serve
 
 
 ## Ressources
@@ -60,7 +60,7 @@ To execute all tests from a single file:
 Alternatively, in GUI mode:
  
 > npx cypress open
-```
+
 Then select `all.cy.ts` from the Cypress interface.
 
 Generate coverage report (you should launch E2E tests from the `all.cy.ts` file before):
