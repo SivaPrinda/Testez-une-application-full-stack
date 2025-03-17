@@ -3,7 +3,6 @@ package com.openclassrooms.starterjwt.controllers;
 import com.openclassrooms.starterjwt.dto.TeacherDto;
 import com.openclassrooms.starterjwt.mapper.TeacherMapper;
 import com.openclassrooms.starterjwt.models.Teacher;
-import com.openclassrooms.starterjwt.dto.TeacherDto;
 import com.openclassrooms.starterjwt.services.TeacherService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
