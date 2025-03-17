@@ -81,6 +81,12 @@
 			<artifactId>mapstruct-processor</artifactId>
 			<version>1.5.1.Final</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -110,7 +116,6 @@
 						<exclude>com/openclassrooms/starterjwt/dto/*</exclude>
 						<exclude>com/openclassrooms/starterjwt/payload/**/*</exclude>
 						<exclude>com/openclassrooms/starterjwt/models/*</exclude>
-						<exclude>com/openclassrooms/starterjwt/mapper/*</exclude>
 						<exclude>com/openclassrooms/starterjwt/SpringBootSecurityJwtApplication.class</exclude>
 					</excludes>
 				</configuration>
