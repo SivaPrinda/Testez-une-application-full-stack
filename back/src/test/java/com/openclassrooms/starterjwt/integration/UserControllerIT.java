@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -22,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 public class UserControllerIT {
     @Autowired
     private MockMvc mockMvc;
@@ -36,8 +38,9 @@ public class UserControllerIT {
             .build();
 
     @AfterEach
-    void clean(){
+    void clean() {
         userRepository.deleteAll();
+        userRepository.flush(); // Important pour réinitialiser les séquences d'IDs dans H2
     }
 
     @Test
